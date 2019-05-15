@@ -11,7 +11,7 @@ SS_shape = S.SS_shape;
 SS_shape_MASK = single(abs(SS_shape) > mask_threshold);
 structure_element = strel('sphere', 3);
 SS_shape_MASK = imerode(imdilate(SS_shape_MASK, structure_element),structure_element); % takes care of dislocation cores
-SS_shape_COM = round(centerOfMass(SS_shape_MASK));
+SS_shape_COM = ceil(centerOfMass(SS_shape_MASK));
 SS_shape = circshift(SS_shape, size(SS_shape)/2-SS_shape_COM);
 
 % original SS shape
@@ -75,7 +75,7 @@ if SS_shape_LS_plot == 1
     SS_shape_LS_MASK = single(abs(SS_shape_LS) > mask_threshold);
     structure_element = strel('sphere', 3);
     SS_shape_LS_MASK = imerode(imdilate(SS_shape_LS_MASK, structure_element),structure_element); % takes care of dislocation cores
-    SS_shape_LS_COM = round(centerOfMass(SS_shape_LS_MASK));
+    SS_shape_LS_COM = ceil(centerOfMass(SS_shape_LS_MASK));
     SS_shape_LS = circshift(SS_shape_LS, size(SS_shape_LS)/2-SS_shape_LS_COM);
 
     % plotting LS shape from DCS
@@ -109,7 +109,7 @@ if SS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
     SS_shape_REC_MASK = single(abs(SS_shape_REC) > mask_threshold);
     structure_element = strel('sphere', 3);
     SS_shape_REC_MASK = imerode(imdilate(SS_shape_REC_MASK, structure_element),structure_element); % takes care of dislocation cores
-    SS_shape_REC_COM = round(centerOfMass(SS_shape_REC_MASK));
+    SS_shape_REC_COM = ceil(centerOfMass(SS_shape_REC_MASK));
     SS_shape_REC = circshift(SS_shape_REC, size(SS_shape_REC)/2-SS_shape_REC_COM);
 
     % plotting SS shape from reconstruction
@@ -143,6 +143,10 @@ if SS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
 
     % overlap textbox
     fprintf('\n...calculating overlap...');
+    % centring masks for overlap calculation
+    SS_shape_MASK = circshift(SS_shape_MASK, size(SS_shape_MASK)/2-SS_shape_COM);
+    SS_shape_REC_MASK = circshift(SS_shape_REC_MASK, size(SS_shape_REC_MASK)/2-SS_shape_REC_COM);
+    % calculating overlap
     SS_shape_REC_overlap = round(abs((1-abs(sum(sum(sum(SS_shape_REC_MASK - SS_shape_MASK))))/sum(sum(sum(SS_shape_MASK))))*100), 2);
     annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(SS_shape_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
 else

@@ -11,7 +11,7 @@ DCS_shape_DRS = S.DCS_shape_DRS;
 DCS_shape_DRS_MASK = single(abs(DCS_shape_DRS) > 0.3);
 structure_element = strel('sphere', 3);
 DCS_shape_DRS_MASK = imerode(imdilate(DCS_shape_DRS_MASK, structure_element),structure_element); % takes care of dislocation cores
-DCS_shape_DRS_COM = round(centerOfMass(DCS_shape_DRS_MASK));
+DCS_shape_DRS_COM = ceil(centerOfMass(DCS_shape_DRS_MASK));
 DCS_shape_DRS = circshift(DCS_shape_DRS, size(DCS_shape_DRS)/2-DCS_shape_DRS_COM);
 
 % plotting DCS shape from DRS
@@ -76,11 +76,11 @@ if isfield(S,'DCS_shape_LS') && DCS_shape_LS_plot == 1
     DCS_shape_LS_MASK = single(abs(DCS_shape_LS) > mask_threshold);
     structure_element = strel('sphere', 3);
     DCS_shape_LS_MASK = imerode(imdilate(DCS_shape_LS_MASK, structure_element),structure_element); % takes care of dislocation cores
-    DCS_shape_LS_COM = round(centerOfMass(DCS_shape_LS_MASK));
+    DCS_shape_LS_COM = ceil(centerOfMass(DCS_shape_LS_MASK));
     DCS_shape_LS = circshift(DCS_shape_LS, size(DCS_shape_LS)/2-DCS_shape_LS_COM);
 
     % detector conjugated space shape from lab space
-    plot_DCS_shape_LS = patch(isosurface(S.realXgrid, S.realYgrid, S.realZgrid, DCS_shape_LS)); % have to switch the S.realYgrid and S.realXgrid positions for overlap, which is dumb
+    plot_DCS_shape_LS = patch(isosurface(S.realXgrid, S.realYgrid, S.realZgrid, DCS_shape_LS));
     set(plot_DCS_shape_LS, 'FaceColor', 'blue', 'EdgeColor', 'none', 'FaceAlpha',0.3);
     
     if DCS_shape_DRS_plot == 1
@@ -111,7 +111,7 @@ if DCS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_AMP), 'file') == 2 &&
     DCS_shape_REC_MASK = single(abs(DCS_shape_REC) > mask_threshold);
     structure_element = strel('sphere', 3);
     DCS_shape_REC_MASK = imerode(imdilate(DCS_shape_REC_MASK, structure_element),structure_element); % takes care of dislocation cores
-    DCS_shape_REC_COM = round(centerOfMass(DCS_shape_REC_MASK));
+    DCS_shape_REC_COM = ceil(centerOfMass(DCS_shape_REC_MASK));
     DCS_shape_REC = circshift(DCS_shape_REC, size(DCS_shape_REC)/2-DCS_shape_REC_COM);
 
     % plotting reconstructed detector conjugated shape
@@ -143,6 +143,10 @@ if DCS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_AMP), 'file') == 2 &&
 
     % overlap textbox
     fprintf('\n...calculating overlap...');
+    % centring masks for overlap calculation
+    DCS_shape_DRS_MASK = circshift(DCS_shape_DRS_MASK, size(DCS_shape_DRS_MASK)/2-DCS_shape_DRS_COM);
+    DCS_shape_REC_MASK = circshift(DCS_shape_REC_MASK, size(DCS_shape_REC_MASK)/2-DCS_shape_REC_COM);
+    % calculating overlap
     DCS_shape_DRS_REC_overlap = round(abs((1-abs(sum(sum(sum(DCS_shape_REC_MASK - DCS_shape_DRS_MASK))))/sum(sum(sum(DCS_shape_DRS_MASK))))*100), 2);
     annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(DCS_shape_DRS_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
 

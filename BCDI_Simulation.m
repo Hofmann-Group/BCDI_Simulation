@@ -237,9 +237,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Calculating coordinates in lab, reciprocal lab and detector reciprocal space
 fprintf('\n\n<<<MAKING COORDINATES>>>\n\n');
-[S.realXgrid, S.realYgrid, S.realZgrid] = lab_space_coordinates(S, S.SS_shape);
-[S.reciprocalXgrid, S.reciprocalYgrid, S.reciprocalZgrid] = reciprocal_lab_space_coordinates(S, S.SS_shape);
-[S.det_reciprocalXgrid, S.det_reciprocalYgrid, S.det_reciprocalZgrid] = detector_reciprocal_space_coordinates(S);
+[S.N1grid, S.N2grid, S.N3grid] = orthogonal_coordinates(S.SS_shape);
+[S.N1gridp, S.N2gridp, S.N3gridp] = non_orthogonal_coordinates(S);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

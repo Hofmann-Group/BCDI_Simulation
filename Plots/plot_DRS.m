@@ -14,7 +14,7 @@ figure('Name','Detector Reciprocal Space (DRS)');
 hold on;
 
 % intensity in detector reciprocal space
-plot_DRS_shape_RLS = patch(isosurface(S.reciprocalXgrid,S.reciprocalYgrid,S.reciprocalZgrid,DRS_shape_RLS,6));
+plot_DRS_shape_RLS = patch(isosurface(S.N1grid*2*pi/S.lambda*S.d/S.D,S.N2grid*2*pi/S.lambda*S.d/S.D,S.N3grid*2*pi/S.lambda*S.d/S.D,DRS_shape_RLS,6));
 set(plot_DRS_shape_RLS, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha',1);
 
 % scaling
@@ -59,7 +59,7 @@ axis vis3d xy;
 view(viewpoint(1), viewpoint(2));
 lighting gouraud;
 camlight('headlight');
-xlim([min(min(min(S.reciprocalXgrid))) max(max(max(S.reciprocalXgrid)))]); ylim([min(min(min(S.reciprocalYgrid))) max(max(max(S.reciprocalYgrid)))]); zlim([min(min(min(S.reciprocalZgrid))) max(max(max(S.reciprocalZgrid)))]);
+xlim([min(min(min(S.N1grid*2*pi/S.lambda*S.d/S.D))) max(max(max(S.N1grid*2*pi/S.lambda*S.d/S.D)))]); ylim([min(min(min(S.N2grid*2*pi/S.lambda*S.d/S.D))) max(max(max(S.N2grid*2*pi/S.lambda*S.d/S.D)))]); zlim([min(min(min(S.N3grid*2*pi/S.lambda*S.d/S.D))) max(max(max(S.N3grid*2*pi/S.lambda*S.d/S.D)))]);
 if grid_plot == 1
     grid on;
 end

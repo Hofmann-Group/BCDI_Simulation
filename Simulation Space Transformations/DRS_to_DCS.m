@@ -4,20 +4,20 @@ fprintf('DRS_to_DCS\n...transforming DRS shape to DCS shape...');
 % reciprocal lab space shape
 RLS_shape_LS = S.RLS_shape_LS;
 
-% reciprocal space grid
-reciprocalXgrid = S.reciprocalXgrid;
-reciprocalYgrid = S.reciprocalYgrid;
-reciprocalZgrid = S.reciprocalZgrid;
+% orthogonal grid coordinates
+N1grid = S.N1grid;
+N2grid = S.N2grid;
+N3grid = S.N3grid;
 
-% detector reciprocal space grid
-det_reciprocalXgrid = S.det_reciprocalXgrid;
-det_reciprocalYgrid = S.det_reciprocalYgrid;
-det_reciprocalZgrid = S.det_reciprocalZgrid;
+% non-orthogonal grid coordinates
+N1gridp = S.N1gridp;
+N2gridp = S.N2gridp;
+N3gridp = S.N3gridp;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Calculating detector conjugated space shape using inverse FT of RLS shape
-DCS_shape_DRS= interp3(reciprocalXgrid, reciprocalYgrid, reciprocalZgrid, RLS_shape_LS, det_reciprocalXgrid, det_reciprocalYgrid, det_reciprocalZgrid, 'linear', 0); % using FT of shape rather than intensity
+DCS_shape_DRS= interp3(N1grid, N2grid, N3grid, RLS_shape_LS, N1gridp, N2gridp, N3gridp, 'linear', 0); % using FT of shape rather than intensity
 DCS_shape_DRS = fftshift(ifftn(ifftshift(DCS_shape_DRS)));
 DCS_shape_DRS = abs(DCS_shape_DRS);
 

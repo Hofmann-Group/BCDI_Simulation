@@ -30,12 +30,12 @@ z_sam = R_xyz*z;
 T_LS_to_SS = [x, y, z]\[x_sam, y_sam, z_sam]; % equivalent to [a_1, a_2, a_3]*inv(b_1, b_2, b_3])
 
 % mapping lab space coordinates to sample space coordinates
-samXgrid = T_LS_to_SS(1,1)*S.realXgrid + T_LS_to_SS(1,2)*S.realYgrid + T_LS_to_SS(1,3)*S.realZgrid;
-samYgrid = T_LS_to_SS(2,1)*S.realXgrid + T_LS_to_SS(2,2)*S.realYgrid + T_LS_to_SS(2,3)*S.realZgrid;
-samZgrid = T_LS_to_SS(3,1)*S.realXgrid + T_LS_to_SS(3,2)*S.realYgrid + T_LS_to_SS(3,3)*S.realZgrid;
+samXgrid = T_LS_to_SS(1,1)*S.N1grid+ T_LS_to_SS(1,2)*S.N2grid+ T_LS_to_SS(1,3)*S.N3grid;
+samYgrid = T_LS_to_SS(2,1)*S.N1grid+ T_LS_to_SS(2,2)*S.N2grid+ T_LS_to_SS(2,3)*S.N3grid;
+samZgrid = T_LS_to_SS(3,1)*S.N1grid+ T_LS_to_SS(3,2)*S.N2grid+ T_LS_to_SS(3,3)*S.N3grid;
 
 % interpolate data in the lab frame to the sample frame
-SS_shape_LS = interp3(S.realXgrid, S.realYgrid, S.realZgrid, shape, samXgrid, samYgrid, samZgrid, 'linear',  0); % make any values outside master data zero.
+SS_shape_LS = interp3(S.N1grid, S.N2grid, S.N3grid, shape, samXgrid, samYgrid, samZgrid, 'linear',  0); % make any values outside master data zero.
 fprintf('\n...done');
 
 

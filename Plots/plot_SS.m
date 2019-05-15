@@ -16,7 +16,7 @@ SS_shape = circshift(SS_shape, size(SS_shape)/2-SS_shape_COM);
 
 % original SS shape
 if SS_shape_plot == 1
-    plot_SS_shape = patch(isosurface(S.realXgrid, S.realYgrid, S.realZgrid, SS_shape));
+    plot_SS_shape = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, SS_shape));
     set(plot_SS_shape, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 1);
 end
 
@@ -30,7 +30,7 @@ axis vis3d xy;
 view(viewpoint(1), viewpoint(2));
 lighting gouraud;
 camlight('left');
-xlim([min(min(min(S.realXgrid))) max(max(max(S.realXgrid)))]); ylim([min(min(min(S.realYgrid))) max(max(max(S.realYgrid)))]); zlim([min(min(min(S.realZgrid))) max(max(max(S.realZgrid)))]);
+xlim([min(min(min(S.N1grid*S.p_sam))) max(max(max(S.N1grid*S.p_sam)))]); ylim([min(min(min(S.N2grid*S.p_sam))) max(max(max(S.N2grid*S.p_sam)))]); zlim([min(min(min(S.N3grid*S.p_sam))) max(max(max(S.N3grid*S.p_sam)))]);
 if grid_plot == 1
     grid on;
 end
@@ -79,7 +79,7 @@ if SS_shape_LS_plot == 1
     SS_shape_LS = circshift(SS_shape_LS, size(SS_shape_LS)/2-SS_shape_LS_COM);
 
     % plotting LS shape from DCS
-    plot_SS_shape_LS = patch(isosurface(S.realXgrid, S.realYgrid, S.realZgrid, SS_shape_LS));
+    plot_SS_shape_LS = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, SS_shape_LS));
     set(plot_SS_shape_LS, 'FaceColor', 'blue', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
     
     if SS_shape_plot == 1
@@ -117,13 +117,13 @@ if SS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
         fprintf('\n...interpolating simulation final pixel size and reconstruction final pixel size...')
         p_sam_REC = S.p_sam_REC; % Final Sample Pixel Size from reconstruction Command Window Output
         [RECX, RECY, RECZ] = meshgrid(-(size(SS_shape_REC,1)-1)/2*p_sam_REC:p_sam_REC:(size(SS_shape_REC,1)-1)/2*p_sam_REC, -(size(SS_shape_REC,2)-1)/2*p_sam_REC:p_sam_REC:(size(SS_shape_REC,2)-1)/2*p_sam_REC, -(size(SS_shape_REC,3)-1)/2*p_sam_REC:p_sam_REC:(size(SS_shape_REC,3)-1)/2*p_sam_REC);
-        SS_shape_REC = interp3(RECX, RECY, RECZ, SS_shape_REC, S.realXgrid, S.realYgrid, S.realZgrid);
+        SS_shape_REC = interp3(RECX, RECY, RECZ, SS_shape_REC, S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam);
     end
     SS_shape_REC_AMP  = abs(SS_shape_REC);
     SS_shape_REC_PH = angle(SS_shape_REC);
-%         plot_SS_shape_REC = patch(isosurface(S.realXgrid, S.realYgrid, S.realZgrid, SS_shape_REC_AMP));
+%         plot_SS_shape_REC = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, SS_shape_REC_AMP));
 %         set(plot_SS_shape_REC, 'FaceColor', 'green', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
-    [faces,verts,colors] = isosurface(S.realXgrid, S.realYgrid, S.realZgrid, SS_shape_REC_AMP, plot_threshold, SS_shape_REC_PH);
+    [faces,verts,colors] = isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, SS_shape_REC_AMP, plot_threshold, SS_shape_REC_PH);
     plot_SS_shape_REC = patch('Vertices', verts, 'Faces', faces, 'FaceVertexCData', colors, 'FaceColor', 'interp', 'edgecolor', 'none');
     c = colorbar;
     ylabel(c, 'Phase');

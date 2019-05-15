@@ -14,10 +14,10 @@ p_sam = S.p_sam;
 % wavelength
 lambda = S.lambda;
 
-% real space grid
-realXgrid = S.realXgrid;
-realYgrid = S.realYgrid;
-realZgrid = S.realZgrid;
+% orthogonal grid coordinates
+N1grid = S.N1grid;
+N2grid = S.N2grid;
+N3grid = S.N3grid;
 
 % rotation matrices
 R_dqp_12 = S.R_dqp_12;
@@ -55,12 +55,12 @@ zp = 2*pi*cross(N1*q_1p, N2*q_2p)./V_DRS;
 T_DCS_to_LS = [xp, yp, zp]\[x, y, z]; % equivalent to [a_1, a_2, a_3]*inv(b_1, b_2, b_3])
 
 % map non-orthogonal coordinates to orthogonal coordinates 
-N1gridp = T_DCS_to_LS(1,1)*realXgrid + T_DCS_to_LS(1,2)*realYgrid + T_DCS_to_LS(1,3)*realZgrid;
-N2gridp = T_DCS_to_LS(2,1)*realXgrid + T_DCS_to_LS(2,2)*realYgrid + T_DCS_to_LS(2,3)*realZgrid;
-N3gridp = T_DCS_to_LS(3,1)*realXgrid + T_DCS_to_LS(3,2)*realYgrid + T_DCS_to_LS(3,3)*realZgrid;
+N1gridp = T_DCS_to_LS(1,1)*N1grid + T_DCS_to_LS(1,2)*N2grid + T_DCS_to_LS(1,3)*N3grid;
+N2gridp = T_DCS_to_LS(2,1)*N1grid + T_DCS_to_LS(2,2)*N2grid + T_DCS_to_LS(2,3)*N3grid;
+N3gridp = T_DCS_to_LS(3,1)*N1grid + T_DCS_to_LS(3,2)*N2grid + T_DCS_to_LS(3,3)*N3grid;
 
 % interpolate data in the detector conjugated frame to the lab frame
-LS_shape_DCS = interp3(realXgrid, realYgrid, realZgrid, DCS_shape_DRS, N1gridp, N2gridp, N3gridp, 'linear',  0); % make any values outside master data zero.
+LS_shape_DCS = interp3(N1grid, N2grid, N3grid, DCS_shape_DRS, N1gridp, N2gridp, N3gridp, 'linear',  0); % make any values outside master data zero.
 fprintf('\n...done\n\n');
 
 

@@ -152,7 +152,7 @@ try
         annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(DCS_shape_DRS_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
     end
 catch
-    fprintf('\n...cannot find the reconstruction folder and/or file...');
+    fprintf('\n...the reconstruction folder and/or file is corrupt or cannot be found...');
     if DCS_shape_DRS_plot == 1 && DCS_shape_LS_plot == 1
         legend([plot_DCS_shape_DRS, plot_DCS_shape_LS], 'DCS shape from DRS', 'DCS shape from LS')
     elseif DCS_shape_DRS_plot == 1

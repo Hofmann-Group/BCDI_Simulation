@@ -17,7 +17,7 @@ LS_shape_SS = circshift(LS_shape_SS, size(LS_shape_SS)/2-LS_shape_SS_COM);
 % plotting LS shape from SS
 if LS_shape_SS_plot == 1
     plot_LS_shape_SS = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, LS_shape_SS));
-    set(plot_LS_shape_SS, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 1);
+    set(plot_LS_shape_SS, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
     legend([plot_LS_shape_SS], 'LS shape from SS');
 end
 
@@ -122,8 +122,6 @@ try
         end
         LS_shape_REC_AMP  = abs(LS_shape_REC);
         LS_shape_REC_PH = angle(LS_shape_REC);
-    %         plot_LS_shape_REC = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, LS_shape_REC_AMP));
-    %         set(plot_LS_shape_REC, 'FaceColor', 'green', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
         [faces,verts,colors] = isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, LS_shape_REC_AMP, plot_threshold, LS_shape_REC_PH);
         plot_LS_shape_REC = patch('Vertices', verts, 'Faces', faces, 'FaceVertexCData', colors, 'FaceColor', 'interp', 'edgecolor', 'none');
         c = colorbar;
@@ -152,7 +150,7 @@ try
         annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(LS_shape_SS_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
     end
 catch
-    fprintf('\n...cannot find the reconstruction folder and/or file...');
+    fprintf('\n...the reconstruction folder and/or file is corrupt or cannot be found...');
     if LS_shape_SS_plot == 1 && LS_shape_DCS_plot == 1
         legend([plot_LS_shape_SS, plot_LS_shape_DCS], 'LS shape from SS', 'LS shape from DCS');
     elseif LS_shape_SS_plot == 1

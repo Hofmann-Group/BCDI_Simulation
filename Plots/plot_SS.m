@@ -17,7 +17,7 @@ SS_shape = circshift(SS_shape, size(SS_shape)/2-SS_shape_COM);
 % original SS shape
 if SS_shape_plot == 1
     plot_SS_shape = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, SS_shape));
-    set(plot_SS_shape, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 1);
+    set(plot_SS_shape, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
 end
 
 % plot parameters
@@ -122,8 +122,6 @@ try
     end
     SS_shape_REC_AMP  = abs(SS_shape_REC);
     SS_shape_REC_PH = angle(SS_shape_REC);
-%         plot_SS_shape_REC = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, SS_shape_REC_AMP));
-%         set(plot_SS_shape_REC, 'FaceColor', 'green', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
     [faces,verts,colors] = isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, SS_shape_REC_AMP, plot_threshold, SS_shape_REC_PH);
     plot_SS_shape_REC = patch('Vertices', verts, 'Faces', faces, 'FaceVertexCData', colors, 'FaceColor', 'interp', 'edgecolor', 'none');
     c = colorbar;
@@ -152,7 +150,7 @@ try
     annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(SS_shape_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
     end
 catch
-    fprintf('\n...cannot find the reconstruction folder and/or file...');
+    fprintf('\n...the reconstruction folder and/or file is corrupt or cannot be found...');
     if SS_shape_plot == 1 && SS_shape_LS_plot == 1
         legend([plot_SS_shape, plot_SS_shape_LS], 'SS shape', 'SS shape from LS');
     elseif SS_shape_plot == 1

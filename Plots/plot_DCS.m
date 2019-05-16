@@ -93,64 +93,65 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plotting detector conjugated shape from reconstruction
-if DCS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_AMP), 'file') == 2 && exist(sprintf('%s', temp_dir_PH), 'file') == 2
-    fprintf('\n...plotting DCS shape from REC...');
-    % loading reconstructed detector conjugated shape
-    DCS_shape_REC_AMP = cell2mat(struct2cell(load(temp_dir_AMP, '-mat')));
-    DCS_shape_REC_PH = cell2mat(struct2cell(load(temp_dir_PH, '-mat'))); 
-    DCS_shape_REC = DCS_shape_REC_AMP.*exp(1i.*DCS_shape_REC_PH);  
+try
+    if DCS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_AMP), 'file') == 2 && exist(sprintf('%s', temp_dir_PH), 'file') == 2
+        fprintf('\n...plotting DCS shape from REC...');
+        % loading reconstructed detector conjugated shape
+        DCS_shape_REC_AMP = cell2mat(struct2cell(load(temp_dir_AMP, '-mat')));
+        DCS_shape_REC_PH = cell2mat(struct2cell(load(temp_dir_PH, '-mat'))); 
+        DCS_shape_REC = DCS_shape_REC_AMP.*exp(1i.*DCS_shape_REC_PH);  
 
-    % taking conjugate reflection if necessary
-    if twin ~= 1 %~=1 instead of == 1 to match it with the detector conjugated shape
-        F = ifftshift(fftn(fftshift(DCS_shape_REC)));
-        DCS_shape_REC = fftshift(ifftn(ifftshift(conj(F))));
+        % taking conjugate reflection if necessary
+        if twin ~= 1 %~=1 instead of == 1 to match it with the detector conjugated shape
+            F = ifftshift(fftn(fftshift(DCS_shape_REC)));
+            DCS_shape_REC = fftshift(ifftn(ifftshift(conj(F))));
+        end
+
+        % shifting DCS shape from REC to the centre of mass
+        fprintf('\n...shifting DCS shape from REC to the centre of mass...');
+        DCS_shape_REC_MASK = single(abs(DCS_shape_REC) > mask_threshold);
+        structure_element = strel('sphere', 3);
+        DCS_shape_REC_MASK = imerode(imdilate(DCS_shape_REC_MASK, structure_element),structure_element); % takes care of dislocation cores
+        DCS_shape_REC_COM = ceil(centerOfMass(DCS_shape_REC_MASK));
+        DCS_shape_REC = circshift(DCS_shape_REC, size(DCS_shape_REC)/2-DCS_shape_REC_COM);
+
+        % plotting reconstructed detector conjugated shape
+        if isfield(S,'p_sam_REC') && S.p_sam_REC > 0
+            fprintf('\n...interpolating simulation final pixel size and reconstruction final pixel size...')
+            p_sam_REC = S.p_sam_REC; % Final Sample Pixel Size from reconstruction Command Window Output
+            [RECX, RECY, RECZ] = meshgrid(-(size(DCS_shape_REC,1)-1)/2*p_sam_REC:p_sam_REC:(size(DCS_shape_REC,1)-1)/2*p_sam_REC, -(size(DCS_shape_REC,2)-1)/2*p_sam_REC:p_sam_REC:(size(DCS_shape_REC,2)-1)/2*p_sam_REC, -(size(DCS_shape_REC,3)-1)/2*p_sam_REC:p_sam_REC:(size(DCS_shape_REC,3)-1)/2*p_sam_REC);
+            DCS_shape_REC = interp3(RECX, RECY, RECZ, DCS_shape_REC, S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam);
+        end
+        DCS_shape_REC_AMP  = abs(DCS_shape_REC);
+        DCS_shape_REC_PH = angle(DCS_shape_REC);
+        [faces,verts,colors] = isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, DCS_shape_REC_AMP, plot_threshold, DCS_shape_REC_PH);
+        plot_DCS_shape_REC = patch('Vertices', verts, 'Faces', faces, 'FaceVertexCData', colors, 'FaceColor', 'interp', 'edgecolor', 'none');
+        c = colorbar;
+        ylabel(c, 'Phase');
+
+        % putting legend in figure
+        if isfield(S,'DCS_shape_LS')  && DCS_shape_DRS_plot == 1 && DCS_shape_LS_plot == 1
+            legend([plot_DCS_shape_DRS, plot_DCS_shape_LS, plot_DCS_shape_REC], 'DCS shape from DRS', 'DCS shape from LS', 'DCS shape from REC')
+        elseif isfield(S,'DCS_shape_LS') && DCS_shape_LS_plot == 1
+            legend([plot_DCS_shape_LS, plot_DCS_shape_REC], 'DCS shape from LS', 'DCS shape from REC')
+        elseif DCS_shape_DRS_plot == 1 && DCS_shape_LS_plot == 1
+            legend([plot_DCS_shape_DRS, plot_DCS_shape_LS], 'DCS shape from DRS', 'DCS shape from LS')
+        elseif DCS_shape_DRS_plot == 1
+            legend([plot_DCS_shape_DRS, plot_DCS_shape_REC], 'DCS shape from DRS', 'DCS shape from REC');
+        else
+            legend([plot_DCS_shape_REC], 'DCS shape from REC')
+        end
+
+        % overlap textbox
+        fprintf('\n...calculating overlap...');
+        % centring masks for overlap calculation
+        DCS_shape_DRS_MASK = circshift(DCS_shape_DRS_MASK, size(DCS_shape_DRS_MASK)/2-DCS_shape_DRS_COM);
+        DCS_shape_REC_MASK = circshift(DCS_shape_REC_MASK, size(DCS_shape_REC_MASK)/2-DCS_shape_REC_COM);
+        % calculating overlap
+        DCS_shape_DRS_REC_overlap = round(abs((1-abs(sum(sum(sum(DCS_shape_REC_MASK - DCS_shape_DRS_MASK))))/sum(sum(sum(DCS_shape_DRS_MASK))))*100), 2);
+        annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(DCS_shape_DRS_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
     end
-
-    % shifting DCS shape from REC to the centre of mass
-    fprintf('\n...shifting DCS shape from REC to the centre of mass...');
-    DCS_shape_REC_MASK = single(abs(DCS_shape_REC) > mask_threshold);
-    structure_element = strel('sphere', 3);
-    DCS_shape_REC_MASK = imerode(imdilate(DCS_shape_REC_MASK, structure_element),structure_element); % takes care of dislocation cores
-    DCS_shape_REC_COM = ceil(centerOfMass(DCS_shape_REC_MASK));
-    DCS_shape_REC = circshift(DCS_shape_REC, size(DCS_shape_REC)/2-DCS_shape_REC_COM);
-
-    % plotting reconstructed detector conjugated shape
-    if isfield(S,'p_sam_REC') && S.p_sam_REC > 0
-        fprintf('\n...interpolating simulation final pixel size and reconstruction final pixel size...')
-        p_sam_REC = S.p_sam_REC; % Final Sample Pixel Size from reconstruction Command Window Output
-        [RECX, RECY, RECZ] = meshgrid(-(size(DCS_shape_REC,1)-1)/2*p_sam_REC:p_sam_REC:(size(DCS_shape_REC,1)-1)/2*p_sam_REC, -(size(DCS_shape_REC,2)-1)/2*p_sam_REC:p_sam_REC:(size(DCS_shape_REC,2)-1)/2*p_sam_REC, -(size(DCS_shape_REC,3)-1)/2*p_sam_REC:p_sam_REC:(size(DCS_shape_REC,3)-1)/2*p_sam_REC);
-        DCS_shape_REC = interp3(RECX, RECY, RECZ, DCS_shape_REC, S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam);
-    end
-    DCS_shape_REC_AMP  = abs(DCS_shape_REC);
-    DCS_shape_REC_PH = angle(DCS_shape_REC);
-    [faces,verts,colors] = isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, DCS_shape_REC_AMP, plot_threshold, DCS_shape_REC_PH);
-    plot_DCS_shape_REC = patch('Vertices', verts, 'Faces', faces, 'FaceVertexCData', colors, 'FaceColor', 'interp', 'edgecolor', 'none');
-    c = colorbar;
-    ylabel(c, 'Phase');
-
-    % putting legend in figure
-    if isfield(S,'DCS_shape_LS')  && DCS_shape_DRS_plot == 1 && DCS_shape_LS_plot == 1
-        legend([plot_DCS_shape_DRS, plot_DCS_shape_LS, plot_DCS_shape_REC], 'DCS shape from DRS', 'DCS shape from LS', 'DCS shape from REC')
-    elseif isfield(S,'DCS_shape_LS') && DCS_shape_LS_plot == 1
-        legend([plot_DCS_shape_LS, plot_DCS_shape_REC], 'DCS shape from LS', 'DCS shape from REC')
-    elseif DCS_shape_DRS_plot == 1 && DCS_shape_LS_plot == 1
-        legend([plot_DCS_shape_DRS, plot_DCS_shape_LS], 'DCS shape from DRS', 'DCS shape from LS')
-    elseif DCS_shape_DRS_plot == 1
-        legend([plot_DCS_shape_DRS, plot_DCS_shape_REC], 'DCS shape from DRS', 'DCS shape from REC');
-    else
-        legend([plot_DCS_shape_REC], 'DCS shape from REC')
-    end
-
-    % overlap textbox
-    fprintf('\n...calculating overlap...');
-    % centring masks for overlap calculation
-    DCS_shape_DRS_MASK = circshift(DCS_shape_DRS_MASK, size(DCS_shape_DRS_MASK)/2-DCS_shape_DRS_COM);
-    DCS_shape_REC_MASK = circshift(DCS_shape_REC_MASK, size(DCS_shape_REC_MASK)/2-DCS_shape_REC_COM);
-    % calculating overlap
-    DCS_shape_DRS_REC_overlap = round(abs((1-abs(sum(sum(sum(DCS_shape_REC_MASK - DCS_shape_DRS_MASK))))/sum(sum(sum(DCS_shape_DRS_MASK))))*100), 2);
-    annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(DCS_shape_DRS_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
-
-else
+catch
     fprintf('\n...cannot find the reconstruction folder and/or file...');
     if DCS_shape_DRS_plot == 1 && DCS_shape_LS_plot == 1
         legend([plot_DCS_shape_DRS, plot_DCS_shape_LS], 'DCS shape from DRS', 'DCS shape from LS')

@@ -92,7 +92,8 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plotting sample space shape from reconstruction
-if SS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
+try
+    if SS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
     fprintf('\n...plotting SS shape from REC...');
     % loading SS shape from reconstruction and mapping it to SS
     LS_shape_REC = cell2mat(struct2cell(load(temp_dir_LAB)));    
@@ -149,7 +150,8 @@ if SS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
     % calculating overlap
     SS_shape_REC_overlap = round(abs((1-abs(sum(sum(sum(SS_shape_REC_MASK - SS_shape_MASK))))/sum(sum(sum(SS_shape_MASK))))*100), 2);
     annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(SS_shape_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
-else
+    end
+catch
     fprintf('\n...cannot find the reconstruction folder and/or file...');
     if SS_shape_plot == 1 && SS_shape_LS_plot == 1
         legend([plot_SS_shape, plot_SS_shape_LS], 'SS shape', 'SS shape from LS');

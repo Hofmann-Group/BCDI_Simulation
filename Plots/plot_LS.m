@@ -93,64 +93,65 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plotting lab space shape from reconstruction
-if LS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
-    fprintf('\n...plotting LS shape from REC...');
-    % loading LS shape from reconstruction
-    LS_shape_REC = cell2mat(struct2cell(load(temp_dir_LAB)));
-%         LS_shape_REC = padcroparray(LS shape from DCS, S.nnc);
+try
+    if LS_shape_REC_plot == 1 && exist(sprintf('%s', temp_dir_LAB), 'file') == 2
+        fprintf('\n...plotting LS shape from REC...');
+        % loading LS shape from reconstruction
+        LS_shape_REC = cell2mat(struct2cell(load(temp_dir_LAB)));
 
-    % taking conjugate reflection if necessary
-    if twin == 1
-        F = ifftshift(fftn(fftshift(LS_shape_REC)));
-        LS_shape_REC = fftshift(ifftn(ifftshift(conj(F))));
+        % taking conjugate reflection if necessary
+        if twin == 1
+            F = ifftshift(fftn(fftshift(LS_shape_REC)));
+            LS_shape_REC = fftshift(ifftn(ifftshift(conj(F))));
+        end
+
+        % shifting LS shape from REC to the centre of mass
+        fprintf('\n...shifting LS shape from REC to the centre of mass...');
+        LS_shape_REC_MASK = single(abs(LS_shape_REC) > mask_threshold);
+        structure_element = strel('sphere', 3);
+        LS_shape_REC_MASK = imerode(imdilate(LS_shape_REC_MASK, structure_element),structure_element); % takes care of dislocation cores
+        LS_shape_REC_COM = ceil(centerOfMass(LS_shape_REC_MASK));
+        LS_shape_REC = circshift(LS_shape_REC, size(LS_shape_REC)/2-LS_shape_REC_COM);
+
+        % plotting LS shape from reconstruction
+        if isfield(S,'p_sam_REC') && S.p_sam_REC > 0
+            fprintf('\n...interpolating simulation final pixel size and reconstruction final pixel size...')
+            p_sam_REC = S.p_sam_REC; % Final Sample Pixel Size from reconstruction Command Window Output
+            [RECX, RECY, RECZ] = meshgrid(-(size(LS_shape_REC,1)-1)/2*p_sam_REC:p_sam_REC:(size(LS_shape_REC,1)-1)/2*p_sam_REC, -(size(LS_shape_REC,2)-1)/2*p_sam_REC:p_sam_REC:(size(LS_shape_REC,2)-1)/2*p_sam_REC, -(size(LS_shape_REC,3)-1)/2*p_sam_REC:p_sam_REC:(size(LS_shape_REC,3)-1)/2*p_sam_REC);
+            LS_shape_REC = interp3(RECX, RECY, RECZ, LS_shape_REC, S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam);
+        end
+        LS_shape_REC_AMP  = abs(LS_shape_REC);
+        LS_shape_REC_PH = angle(LS_shape_REC);
+    %         plot_LS_shape_REC = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, LS_shape_REC_AMP));
+    %         set(plot_LS_shape_REC, 'FaceColor', 'green', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+        [faces,verts,colors] = isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, LS_shape_REC_AMP, plot_threshold, LS_shape_REC_PH);
+        plot_LS_shape_REC = patch('Vertices', verts, 'Faces', faces, 'FaceVertexCData', colors, 'FaceColor', 'interp', 'edgecolor', 'none');
+        c = colorbar;
+        ylabel(c, 'Phase');
+
+        % putting legend in figure
+        if isfield(S,'LS_shape_DCS') && LS_shape_SS_plot == 1 && LS_shape_DCS_plot == 1
+            legend([plot_LS_shape_SS, plot_LS_shape_DCS, plot_LS_shape_REC], 'LS shape from SS', 'LS shape from DCS', 'LS shape from REC')
+        elseif isfield(S,'LS_shape_DCS') && LS_shape_DCS_plot == 1
+            legend([plot_LS_shape_DCS, plot_LS_shape_REC], 'LS shape from DCS', 'LS shape from REC')
+        elseif LS_shape_SS_plot == 1 && LS_shape_DCS_plot == 1
+            legend([plot_LS_shape_SS, plot_LS_shape_DCS], 'LS shape from SS', 'LS shape from DCS');
+        elseif LS_shape_SS_plot == 1
+            legend([plot_LS_shape_SS, plot_LS_shape_REC], 'LS shape from SS', 'LS shape from REC');
+        else
+            legend(plot_LS_shape_REC, 'LS shape from REC')
+        end
+
+        % overlap textbox
+        fprintf('\n...calculating overlap...');
+        % centring masks for overlap calculation
+        LS_shape_SS_MASK = circshift(LS_shape_SS_MASK, size(LS_shape_SS_MASK)/2-LS_shape_SS_COM);
+        LS_shape_REC_MASK = circshift(LS_shape_REC_MASK, size(LS_shape_REC_MASK)/2-LS_shape_REC_COM);
+        % calculating overlap
+        LS_shape_SS_REC_overlap = round(abs((1-abs(sum(sum(sum(LS_shape_REC_MASK - LS_shape_SS_MASK))))/sum(sum(sum(LS_shape_SS_MASK))))*100), 2);
+        annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(LS_shape_SS_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
     end
-
-    % shifting LS shape from REC to the centre of mass
-    fprintf('\n...shifting LS shape from REC to the centre of mass...');
-    LS_shape_REC_MASK = single(abs(LS_shape_REC) > mask_threshold);
-    structure_element = strel('sphere', 3);
-    LS_shape_REC_MASK = imerode(imdilate(LS_shape_REC_MASK, structure_element),structure_element); % takes care of dislocation cores
-    LS_shape_REC_COM = ceil(centerOfMass(LS_shape_REC_MASK));
-    LS_shape_REC = circshift(LS_shape_REC, size(LS_shape_REC)/2-LS_shape_REC_COM);
-
-    % plotting LS shape from reconstruction
-    if isfield(S,'p_sam_REC') && S.p_sam_REC > 0
-        fprintf('\n...interpolating simulation final pixel size and reconstruction final pixel size...')
-        p_sam_REC = S.p_sam_REC; % Final Sample Pixel Size from reconstruction Command Window Output
-        [RECX, RECY, RECZ] = meshgrid(-(size(LS_shape_REC,1)-1)/2*p_sam_REC:p_sam_REC:(size(LS_shape_REC,1)-1)/2*p_sam_REC, -(size(LS_shape_REC,2)-1)/2*p_sam_REC:p_sam_REC:(size(LS_shape_REC,2)-1)/2*p_sam_REC, -(size(LS_shape_REC,3)-1)/2*p_sam_REC:p_sam_REC:(size(LS_shape_REC,3)-1)/2*p_sam_REC);
-        LS_shape_REC = interp3(RECX, RECY, RECZ, LS_shape_REC, S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam);
-    end
-    LS_shape_REC_AMP  = abs(LS_shape_REC);
-    LS_shape_REC_PH = angle(LS_shape_REC);
-%         plot_LS_shape_REC = patch(isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, LS_shape_REC_AMP));
-%         set(plot_LS_shape_REC, 'FaceColor', 'green', 'EdgeColor', 'none', 'FaceAlpha', 0.3);
-    [faces,verts,colors] = isosurface(S.N1grid*S.p_sam, S.N2grid*S.p_sam, S.N3grid*S.p_sam, LS_shape_REC_AMP, plot_threshold, LS_shape_REC_PH);
-    plot_LS_shape_REC = patch('Vertices', verts, 'Faces', faces, 'FaceVertexCData', colors, 'FaceColor', 'interp', 'edgecolor', 'none');
-    c = colorbar;
-    ylabel(c, 'Phase');
-
-    % putting legend in figure
-    if isfield(S,'LS_shape_DCS') && LS_shape_SS_plot == 1 && LS_shape_DCS_plot == 1
-        legend([plot_LS_shape_SS, plot_LS_shape_DCS, plot_LS_shape_REC], 'LS shape from SS', 'LS shape from DCS', 'LS shape from REC')
-    elseif isfield(S,'LS_shape_DCS') && LS_shape_DCS_plot == 1
-        legend([plot_LS_shape_DCS, plot_LS_shape_REC], 'LS shape from DCS', 'LS shape from REC')
-    elseif LS_shape_SS_plot == 1 && LS_shape_DCS_plot == 1
-        legend([plot_LS_shape_SS, plot_LS_shape_DCS], 'LS shape from SS', 'LS shape from DCS');
-    elseif LS_shape_SS_plot == 1
-        legend([plot_LS_shape_SS, plot_LS_shape_REC], 'LS shape from SS', 'LS shape from REC');
-    else
-        legend(plot_LS_shape_REC, 'LS shape from REC')
-    end
-
-    % overlap textbox
-    fprintf('\n...calculating overlap...');
-    % centring masks for overlap calculation
-    LS_shape_SS_MASK = circshift(LS_shape_SS_MASK, size(LS_shape_SS_MASK)/2-LS_shape_SS_COM);
-    LS_shape_REC_MASK = circshift(LS_shape_REC_MASK, size(LS_shape_REC_MASK)/2-LS_shape_REC_COM);
-    % calculating overlap
-    LS_shape_SS_REC_overlap = round(abs((1-abs(sum(sum(sum(LS_shape_REC_MASK - LS_shape_SS_MASK))))/sum(sum(sum(LS_shape_SS_MASK))))*100), 2);
-    annotation('textbox',[0.17, 0.1, .3, .3], 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle','String',['Overlap: ',num2str(LS_shape_SS_REC_overlap),'%'], 'BackgroundColor', 'white','FitBoxToText','on');
-else
+catch
     fprintf('\n...cannot find the reconstruction folder and/or file...');
     if LS_shape_SS_plot == 1 && LS_shape_DCS_plot == 1
         legend([plot_LS_shape_SS, plot_LS_shape_DCS], 'LS shape from SS', 'LS shape from DCS');

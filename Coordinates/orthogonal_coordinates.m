@@ -1,4 +1,5 @@
 function [realXgrid, realYgrid, realZgrid] = orthogonal_coordinates(shape)
+% makes orthogonal meshgrid coordinates based on the shape size
 fprintf('orthogonal_coordinates\n...creating orthogonal coordinates...');
 % orthogonal meshgrid coordinates                                 
 [x_pix, y_pix, z_pix] = size(shape);

@@ -1,27 +1,16 @@
 function SS_shape_LS = LS_to_SS(S, LS_shape)
+% maps a LS shape to SS
 fprintf('\nLS_to_SS\n...transforming LS shape to SS shape...');
-%% Declaring variables from shape structure
-% lab space shape
-shape = LS_shape;
-
-% rotation matrx
-R_xyz= S.R_xyz;
-
-% sample pixel size
-p_sam = S.p_sam;
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Making basis vectors
 % making x, y, z lab space vectors
-x = p_sam*[1; 0; 0];
-y = p_sam*[0; 1; 0];
-z = p_sam*[0; 0; 1];
+x = S.p_sam*[1; 0; 0];
+y = S.p_sam*[0; 1; 0];
+z = S.p_sam*[0; 0; 1];
 
 % making x_sam , y_sam , z_sam sample space vectors
-x_sam = R_xyz*x;
-y_sam = R_xyz*y;
-z_sam = R_xyz*z;
+x_sam = S.R_xyz*x;
+y_sam = S.R_xyz*y;
+z_sam = S.R_xyz*z;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +24,7 @@ samYgrid = T_LS_to_SS(2,1)*S.N1grid+ T_LS_to_SS(2,2)*S.N2grid+ T_LS_to_SS(2,3)*S
 samZgrid = T_LS_to_SS(3,1)*S.N1grid+ T_LS_to_SS(3,2)*S.N2grid+ T_LS_to_SS(3,3)*S.N3grid;
 
 % interpolate data in the lab frame to the sample frame
-SS_shape_LS = interp3(S.N1grid, S.N2grid, S.N3grid, shape, samXgrid, samYgrid, samZgrid, 'linear',  0); % make any values outside master data zero.
+SS_shape_LS = interp3(S.N1grid, S.N2grid, S.N3grid, LS_shape, samXgrid, samYgrid, samZgrid, 'linear',  0); % make any values outside master data zero.
 fprintf('\n...done');
 
 

@@ -1,12 +1,13 @@
-function [R_dqp_12, R_dqp_3, R_xyz, S_0lab_dir] = plugin_APS_34IDC(theta_spec, chi_spec, phi_spec, delta_spec, gamma_spec, rocking_increment, rocking_angle)
+function [R_dqp_12, R_dqp_3, R_xyz, S_0lab_dir] = plugin_APS_34IDC(theta_bl, chi_bl, phi_bl, delta_bl, gamma_bl, rocking_increment, rocking_angle)
+% converts 34-ID-C angles to right-handed convention and creates matrices
 fprintf('plugin_APS_34IDC');
 % convert reflection SPEC angles to a right-handed coordinate system for new reflection
 fprintf('\n...converting angles...');
-theta = theta_spec;
-chi = 90 - chi_spec;
-phi = phi_spec;
-delta = delta_spec;
-gamma = -gamma_spec;
+theta = theta_bl;
+chi = 90 - chi_bl;
+phi = phi_bl;
+delta = delta_bl;
+gamma = -gamma_bl;
 
 % rotation matrices
 fprintf('\n...creating rotation matrices...');

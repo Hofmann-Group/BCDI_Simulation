@@ -44,7 +44,7 @@ clc;
 clear;
 close all;
 fprintf('<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>\n');
-fprintf('                         BCDI Simulation\n');
+fprintf('                          BCDI Simulation\n');
 fprintf('                            Version 1.0\n');
 fprintf('                             May 2019\n');
 fprintf('                      Written By: David Yang\n');
@@ -85,6 +85,13 @@ S.U_0 = eye(3); % 3x3 orientation matrix, otherwise set to eye(3)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DCS_to_DCS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+dcs_hkl = [1; 1; 1]; % choose reflection for DCS to DCS transformation
+dcs_rocking_angle = 'dtheta'; % choose rocking axis for DCS to DCS transformation
+dcs_twin = 1; % 1 or 0 to choose conjugate reflection, toggle to take the conjugate reflection of the reconstructed shape so that it matches the simulation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 34-ID-C PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 S.d = 55e-6; % detector pixel size in m
 S.lambda = (12.398/10.0)/10*10^-9; % wavelength in m
@@ -95,7 +102,7 @@ S.rocking_angle = 'dtheta'; % choose 'dtheta' or 'dphi' rocking
 
 %% 3. Saving file options
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SAVE FILES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-save_files = 1; % 1 to save -SAM, -LAB, -AMP, -PH, -BIN and TIFF files
+save_files = 0; % 1 to save -SAM, -LAB, -AMP, -PH, -BIN and TIFF files
 save_files_dir = 'Simulated Data'; % the folder to put the saved files
 binary_threshold = 0.5; % binary threshold applied to abs(DCS_shape_DRS)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,8 +135,13 @@ Options.twin = 0; % 0 or 1 to flip LAB shape, toggle to take the conjugate refle
 
 
 %%%%%%%%%%%%%%%%%%%%%%% RECONSTRUCTION PLOT OPTIONS %%%%%%%%%%%%%%%%%%%%%%%
+% Options.dir = '../JessesCodeGPUversion/Simulations_Correct';
 Options.dir = 'Reconstruction Examples';
+% Options.dir = '../JessesCodeGPUversion/Simulations_Incorrect'; % folder that contains the reconstruction, leave blank/null if not needed
 
+% Options.folder_name = 'Rec-Cylinder_(111)_dphi-00266-ERlrHIOlr2000-NM-SW'; % reconstruction folder (which should be the root of the individual file names)
+% Options.folder_name = 'Rec-Cylinder_(111)_dtheta-00685-ERlrHIOlr2000-NM-SW'; % reconstruction folder (which should be the root of the individual file names)
+% Options.folder_name = 'Rec-Cylinder_(-120)_dphi-00253-ERlrHIOlr2000-NM-SW'; % reconstruction folder (which should be the root of the individual file names)
 Options.folder_name = 'Rec-Cylinder_(-120)_dtheta-00274-ERlrHIOlr2000-NM-SW'; % reconstruction folder (which should be the root of the individual file names)
 
 S.p_sam_REC = S.p_sam; % a Command Window Output from reconstruction, in m (not nm). Comment/leave null if unknown/not needed
@@ -148,17 +160,62 @@ plot_LS_figures = 1; % 1 to show lab space figure
 
 
 %%%%%%%%%%%%%%%%%%%%% PLOT RECIPROCAL LAB SPACE (RLS) %%%%%%%%%%%%%%%%%%%%%
-plot_RLS_figures = 1; % 1 to show reciprocal lab space figure
+plot_RLS_figures = 0; % 1 to show reciprocal lab space figure
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%% PLOT DETECTOR RECIPROCAL SPACE (DRS) %%%%%%%%%%%%%%%%%%
-plot_DRS_figures = 1; % 1 to show detector reciprocal space figure
+plot_DRS_figures = 0; % 1 to show detector reciprocal space figure
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%% PLOT DETECTOR CONJUGATED SPACE (DCS) %%%%%%%%%%%%%%%%%%
 plot_DCS_figures = 1; % 1 to show detector conjugated space figure
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% 6. Measurement Geometry Plots
+%%%%%%%%%%%%%%%%%%%%% PLOT DIFFRACTION ANGLE GEOMETRY %%%%%%%%%%%%%%%%%%%%%
+diffraction_angles_figures = 0; % 1 to show plot of diffraction angle beam geometry
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%% PLOT RECIPROCAL LAB SPACE GEOMETRY %%%%%%%%%%%%%%%%%%%%
+plot_RLS_geometry_figures = 0; % 1 to show plot of S_lab geometry
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%% PLOT BRAGG SLICE GEOMETRY %%%%%%%%%%%%%%%%%%%%%%%%%
+plot_bragg_slice_geometry_figures = 0; % 1 to show animation of rocking geometry
+plot_bragg_slice_geometry_slicebyslice = 1; % 1 to show slice by slice
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%% PLOT ROCKING GEOMETRY ANIMATION %%%%%%%%%%%%%%%%%%%%%%
+plot_rocking_geometry_figures = 0; % 1 to show animation of rocking geometry with shape rotation
+plot_rocking_geometry_slicebyslice = 0; % 1 to show slice by slice
+plot_rocking_geometry_video = 0; % 1 to make video
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%% PLOT ROCKING CURVE TIFF ANIMATION %%%%%%%%%%%%%%%%%%%%%
+plot_bragg_slice_geometry_tiff_figures = 0; % 1 to show animation of rocking curve with generated TIFF file
+plot_bragg_slice_geometry_tiff_slicebyslice = 1; % 1 to show slice by slice
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT ARRAY SLICES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plot_array_slices_figures = 0;
+array_by_slices_array = S.SS_shape; % choose the array to slice through
+array_by_slices_dimension = 3; % 1 = x, 2 = y, 3 = z, to view the slices down each a selected axis
+array_by_slices_slicebyslice = 0; % 1 to show slice by slice
+array_by_slices_video = 0; % 1 to make video
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% PLOT ARRAY CENTRAL SLICES %%%%%%%%%%%%%%%%%%%%%%%%
+plot_central_slices_figures = 0; % 1 to show plot of central slices through an array
+central_slices_array = S.SS_shape; % choose the array
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -181,7 +238,7 @@ addpath(genpath('Simulation Space Transformations'));
 fprintf('\n\n<<<PERFORMING BEAMLINE-SPECIFIC CALCULATIONS>>>\n\n');
 
 % calculating diffraction angles based on chosen reflection
-[S.theta_bl, S.chi_bl, S.phi_bl, S.delta_bl, S.gamma_bl, S.Q_lab, S.S_lab, S.S_0lab] = motor_angles_APS_34IDC(S, 0); % returns as beamline angles. gamma_bl as -gamma and chi_bl as 90-chi
+[S.theta_bl, S.chi_bl, S.phi_bl, S.delta_bl, S.gamma_bl, S.Q_lab, S.S_lab, S.S_0lab] = motor_angles_APS_34IDC(S, diffraction_angles_figures); % returns as beamline angles. gamma_bl as -gamma and chi_bl as 90-chi
 
 % calculating rocking increment (such that |q'_1|=|q'_2|=|q'_3|) and creating fundamental matrices
 if strcmp(S.rocking_angle, 'dtheta')
@@ -232,6 +289,9 @@ S.LS_shape_DCS = DCS_to_LS(S);
 % calculating the detector conjugated shape from real space shape
 S.DCS_shape_LS = LS_to_DCS(S);
 
+% calculating the detector conjugated shape from the detector conjugated shape of a different reflection
+% DCS_to_DCS(S, dcs_hkl, dcs_rocking_angle, dcs_twin);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Saving -SAM, -LAB, -AMP, -PH, -BIN and TIFF files
@@ -268,9 +328,38 @@ if plot_DCS_figures == 1
     plot_DCS(S, Options);
 end
 
+% plotting reciprocal lab space (RLS) S_lab geometry
+if plot_RLS_geometry_figures == 1
+    plot_RLS_geometry(S, Options)
+end
+
+% plotting rocking geometry animation
+if plot_bragg_slice_geometry_figures == 1
+    plot_bragg_slice_geometry(S, Options, plot_bragg_slice_geometry_slicebyslice)
+end
+
+% plotting rocking geometry diffraction angles animation with rotating shape
+if plot_rocking_geometry_figures == 1
+    plot_rocking_geometry(S, Options, plot_rocking_geometry_slicebyslice, plot_rocking_geometry_video)
+end
+
+% plotting rocking curve animation with generated TIFF file
+if plot_bragg_slice_geometry_tiff_figures == 1
+    plot_bragg_slice_geometry_tiff(S, Options, plot_bragg_slice_geometry_tiff_slicebyslice)
+end
+
+% plotting an array by slices along certain dimension
+if plot_array_slices_figures == 1
+    plot_array_slices(S.DRS_shape_RLS, array_by_slices_dimension, array_by_slices_video, Options, array_by_slices_slicebyslice)
+end
+
+% plotting central slices of an array
+if plot_central_slices_figures == 1
+    plot_central_slices(S.DRS_shape_RLS);
+end
 
 fprintf('\n\n<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>\n');
-S
+%S
 fprintf('\n                        FINISHED SIMULATION\n');
 fprintf('<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

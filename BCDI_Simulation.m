@@ -1,4 +1,3 @@
-% To save figure in high quality, 600 dpi: print(gcf,'3D_Bragg_Peak.png','-dpng','-r600')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BCDI Simulation
 % Version 1.0

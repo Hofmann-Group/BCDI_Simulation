@@ -4,7 +4,7 @@ The repository, BCDI_Simulation, contains scripts that simulate a Bragg Coherent
 
 ## Installation
 
-For complete a download, please use GitHub Desktop to pull the repository to your machine. If the .zip file is downloaded, the Reconstruction Examples will be pointer files rather than the actual file. This will prevent the reconstructed shapes from being plotted alongside the calculated shapes in the demonstration. Regardless, the MATLAB scripts will still be perfectly functional.
+For a complete download, please use GitHub Desktop to pull the repository to your machine. If the .zip file is downloaded, the Reconstruction Examples will be pointer files rather than the actual file. This will prevent the reconstructed shapes from being plotted alongside the calculated shapes in the demonstration. Regardless, the MATLAB scripts will still be perfectly functional.
 
 
 ## Usage

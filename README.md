@@ -1,6 +1,6 @@
-# BCDI_Simulaion
+# BCDI_Simulation
 
-The repository, BCDI_Simulaion, contains scripts that simulate a Bragg Coherent X-ray Diffraction Imaging (BCDI) experiment based on user inputs. It accompanies the following [publication]().
+The repository, BCDI_Simulation, contains scripts that simulate a Bragg Coherent X-ray Diffraction Imaging (BCDI) experiment based on user inputs. It accompanies the following [publication]().
 
 ## Installation
 

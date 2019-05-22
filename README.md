@@ -9,7 +9,7 @@ For complete a download, please use GitHub Desktop to pull the repository to you
 
 ## Usage
 
-Using MATLAB, make BCDI_Simulation your working folder. Then, open BCDI_Simulation and run it for a demonstration, or type the following into the Command Window:
+Using MATLAB, make BCDI_Simulation your working folder. Then, open the script, BCDI_Simulation, and run it for a demonstration, or type the following into the Command Window:
 
 ```matlab
 BCDI_Simulation

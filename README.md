@@ -9,10 +9,10 @@ For complete a download, please use GitHub Desktop to pull the repository to you
 
 ## Usage
 
-Using MATLAB, make BCDI_Simulaion your working folder. Then, open BCDI_Simulation and run it for a demonstration, or type the following into the Command Window:
+Using MATLAB, make BCDI_Simulation your working folder. Then, open BCDI_Simulation and run it for a demonstration, or type the following into the Command Window:
 
 ```matlab
-BCDI_Simulaion
+BCDI_Simulation
 ```
 Feel free to build and customize! For specific usage and capabilities, please refer to the comments in each of the files. At the moment, the geometry is based on beamline 34-ID-C at the Advanced Photon Source. If needed, we can help make a plugin for your specific beamline.
 

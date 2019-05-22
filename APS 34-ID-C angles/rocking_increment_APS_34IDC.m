@@ -6,7 +6,7 @@ fprintf('rocking_increment_APS_34IDC');
 if strcmp(S.rocking_angle, 'dtheta')
     dtheta = 0.0001; % starting guess for dtheta
     dtheta_increment = 0.000001; % dtheta loop increment
-    LHS = norm(roty(dtheta)*S.Q_lab-S.Q_lab); % magnitude of q'_3
+    LHS = norm(rotyd(dtheta)*S.Q_lab-S.Q_lab); % magnitude of q'_3
     RHS = 2*pi()/S.lambda*S.d/S.D; % magnitude of q'_1 or q'_2
     
     % while loop to recursively solve for dtheta setting the magnitude of q'_3 to equal the magnitude of q'_1/2
@@ -16,7 +16,7 @@ if strcmp(S.rocking_angle, 'dtheta')
     while abs(LHS - RHS)>1e3 && counter < counter_limit        
         counter = counter + 1; % increasing counter for each loop iteration
         dtheta = dtheta + dtheta_increment; % adding an increment to dtheta
-        LHS = norm(roty(dtheta)*S.Q_lab-S.Q_lab); % magnitude of q'_3
+        LHS = norm(rotyd(dtheta)*S.Q_lab-S.Q_lab); % magnitude of q'_3
         RHS = 2*pi()/S.lambda*S.d/S.D; % magnitude of q'_1 or q'_2
     end
     if counter == counter_limit
@@ -29,7 +29,7 @@ if strcmp(S.rocking_angle, 'dtheta')
 elseif strcmp(S.rocking_angle, 'dphi')
     dphi = 0.0001; % starting guess for dphi
     dphi_increment = 0.000001; % dphi loop increment
-    LHS = norm(rotx(dphi)*S.Q_lab-S.Q_lab); % magnitude of q'_3
+    LHS = norm(rotxd(dphi)*S.Q_lab-S.Q_lab); % magnitude of q'_3
     RHS = 2*pi()/S.lambda*S.d/S.D; % magnitude of q'_1 or q'_2
     
     % while loop to recursively solve for dphi setting the magnitude of q'_3 to equal the magnitude of q'_1/2
@@ -39,7 +39,7 @@ elseif strcmp(S.rocking_angle, 'dphi')
     while abs(LHS - RHS)>1e3 && counter < counter_limit
         counter = counter + 1; % increasing counter for each loop iteration
         dphi = dphi + dphi_increment; % adding an increment to dphi
-        LHS = norm(rotx(dphi)*S.Q_lab-S.Q_lab); % magnitude of q'_3
+        LHS = norm(rotxd(dphi)*S.Q_lab-S.Q_lab); % magnitude of q'_3
         RHS = 2*pi()/S.lambda*S.d/S.D; % magnitude of q'_1 or q'_2
     end
     if counter == counter_limit

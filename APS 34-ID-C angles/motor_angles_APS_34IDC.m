@@ -42,11 +42,11 @@ S_sam_n_1 = S_sam_1/norm(S_sam_1); % unit vector along s direction
 % compute phi, chi and theta, based on projection of S onto xz plane
 phi_1 = 2*atand(S_0sam_n_1(2)/S_0sam_n_1(3)); % solved rotation matrices to get phi and chi based on the constraint that S_0sam projected onto the xz plane should be parallel to [a; 0; b]
 chi_1 = atand((S_0sam_n_1(3)*sind(phi_1)-S_0sam_n_1(2)*cosd(phi_1))/S_0sam_n_1(1));
-R_chi_phi_1 = rotz(chi_1)*rotx(phi_1);
+R_chi_phi_1 = rotzd(chi_1)*rotxd(phi_1);
 S_0sam_1_proj_temp = R_chi_phi_1*S_0sam_1; % S_0sam projected onto the xz plane, parallel to [a; 0; b]
 theta_1 = atand(-S_0sam_1_proj_temp(1)/S_0sam_1_proj_temp(3));
 
-R_xyz_1 = roty(theta_1)*rotz(chi_1)*rotx(phi_1); % sample rotation matrix
+R_xyz_1 = rotyd(theta_1)*rotzd(chi_1)*rotxd(phi_1); % sample rotation matrix
 S_0lab_1 = R_xyz_1*S_0sam_1; % should be parallel to [0; 0; 1];
 S_lab_1 = R_xyz_1*S_sam_1;
 Q_lab_1 = R_xyz_1*Q_sam;
@@ -57,12 +57,12 @@ S_0lab_n_1 = R_xyz_1*S_sam_n_1; % exit beams for the first set of possible incid
 gamma_1 = asind(-S_0lab_n_1(2)); % rotate about x
 delta_1 = asind(S_0lab_n_1(1)/cosd(gamma_1)); % rotate about y
 
-det_1 = roty(delta_1)*rotx(gamma_1)*[0; 0; 1]; % should be the same direction as R_xyz*S_sam_n_1 = S_lab
+det_1 = rotyd(delta_1)*rotxd(gamma_1)*[0; 0; 1]; % should be the same direction as R_xyz*S_sam_n_1 = S_lab
 
 % fixing the dectector vector orientation and delta angle
 if sign(det_1(3))~=sign(S_0lab_n_1(3))
     delta_1 = 180-delta_1;
-    det_1 = roty(delta_1)*rotx(gamma_1)*[0; 0; 1];
+    det_1 = rotyd(delta_1)*rotxd(gamma_1)*[0; 0; 1];
 end
 
 
@@ -83,11 +83,11 @@ S_sam_n_2 = S_sam_2/norm(S_sam_2); % unit vector along s direction
 % compute phi, chi and theta, based on projection of s onto xz plane
 phi_2 = 2*atand(S_0sam_n_2(2)/S_0sam_n_2(3)); % solved rotation matrices to get phi and chi based on the constraint that S_0sam projected onto the xz plane should be parallel to [a; 0; b]
 chi_2 = atand((S_0sam_n_2(3)*sind(phi_2)-S_0sam_n_2(2)*cosd(phi_2))/S_0sam_n_2(1));
-R_chi_phi_2 = rotz(chi_2)*rotx(phi_2); 
+R_chi_phi_2 = rotzd(chi_2)*rotxd(phi_2); 
 S_0sam_2_proj_temp = R_chi_phi_2*S_0sam_2; % S_0sam projected onto the xz plane, parallel to [a; 0; b]
 theta_2 = atand(-S_0sam_2_proj_temp(1)/S_0sam_2_proj_temp(3));
 
-R_xyz_2 = roty(theta_2)*rotz(chi_2)*rotx(phi_2); % sample rotation matrix
+R_xyz_2 = rotyd(theta_2)*rotzd(chi_2)*rotxd(phi_2); % sample rotation matrix
 S_0lab_2 = R_xyz_2*S_0sam_2; % should be parallel to [0; 0; 1];
 S_lab_2 = R_xyz_2*S_sam_2;
 Q_lab_2 = R_xyz_2*Q_sam;
@@ -98,12 +98,12 @@ S_0lab_n_2 = R_xyz_2*S_sam_n_2; % exit beams for the second set of possible inci
 gamma_2 = asind(-S_0lab_n_2(2)); % rotate about x
 delta_2 = asind(S_0lab_n_2(1)/cosd(gamma_2)); % rotate about y
 
-det_2 = roty(delta_2)*rotx(gamma_2)*[0; 0; 2*pi/S.lambda]; % should be the same direction as R_xyz*S_sam_n_2 = S_lab
+det_2 = rotyd(delta_2)*rotxd(gamma_2)*[0; 0; 2*pi/S.lambda]; % should be the same direction as R_xyz*S_sam_n_2 = S_lab
 
 % fixing the dectector vector orientation and delta angle
 if sign(det_2(3))~=sign(S_0lab_n_2(3))
     delta_2 = 180-delta_2;
-    det_2 = roty(delta_2)*rotx(gamma_2)*[0; 0; 1];
+    det_2 = rotyd(delta_2)*rotxd(gamma_2)*[0; 0; 1];
 end
 
 

@@ -40,7 +40,10 @@ xlim([min(min(min(N1grid))) max(max(max(N1grid)))]); ylim([min(min(min(N2grid)))
 if Options.grid == 1
     grid on;
 end
-    
+
+% scaling
+scale = norm(S.S_lab)/S.N*2/(S.p_sam);
+
 % x, y and z axes
 if Options.axes == 1
     fprintf('\n...plotting axes...');

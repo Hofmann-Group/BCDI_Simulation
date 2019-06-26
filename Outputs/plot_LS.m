@@ -41,10 +41,12 @@ if Options.grid == 1
     grid on;
 end
 
+% scaling
+scale = norm(S.S_lab)/S.N*2/(S.p_sam);
+
 % diffraction beams
 if Options.beams == 1
     fprintf('\n...plotting diffraction beams...');
-    scale = norm(S.S_lab)/S.N*2/(S.p_sam);
     beam_S_0lab = quiver3(0,0,-0.9*norm(S.S_0lab)/scale,0.9*(S.S_0lab(1,1)/scale),0.9*(S.S_0lab(2,1)/scale),0.9*(S.S_0lab(3,1)/scale));
     set(beam_S_0lab,'Color','blue','Linewidth',2,'MaxHeadSize',0.5,'AutoScale','off');
     text(0,0,-norm(S.S_0lab)/scale,'S_{0lab}','Color','blue','FontSize',14);

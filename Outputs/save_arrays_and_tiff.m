@@ -3,9 +3,9 @@ function save_arrays_and_tiff(S, dir, binary_threshold)
 fprintf('\n\n<<<SAVING FILES>>>\n\n');
 fprintf('save_arrays_and_tiff\n...making new folder...');
 %% Choosing dtheta or dphi in file name
-if strcmp(S.rocking_angle, 'dtheta')
+if strcmp(S.rocking_axis, 'dtheta')
     rocking_angle = round(S.dtheta, 5);
-elseif strcmp(S.rocking_angle, 'dphi')
+elseif strcmp(S.rocking_axis, 'dphi')
     rocking_angle = round(S.dphi, 5);
 end
 
@@ -13,7 +13,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Making a new folder to save the arrays
 % choosing the folder AND file name, feel free to change
-folder_name = [S.name,'_(', num2str(S.hkl(1)), num2str(S.hkl(2)), num2str(S.hkl(3)),')_', num2str(-S.gamma_bl),'_gamma_',num2str(S.delta_bl),'_delta_',num2str(rocking_angle),'_',S.rocking_angle];
+folder_name = [S.name,'_(', num2str(S.hkl(1)), num2str(S.hkl(2)), num2str(S.hkl(3)),')_', num2str(-S.gamma_bl),'_gamma_',num2str(S.delta_bl),'_delta_',num2str(rocking_angle),'_',S.rocking_axis];
 
 % making the array folder
 mkdir(dir, folder_name);

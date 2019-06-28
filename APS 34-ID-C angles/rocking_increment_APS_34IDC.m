@@ -3,7 +3,7 @@ function dangle = rocking_increment_APS_34IDC(S)
 fprintf('rocking_increment_APS_34IDC');
 
 % use recursion to find dtheta or dphi because the magnitude of the vector needs to be set to a specific value
-if strcmp(S.rocking_angle, 'dtheta')
+if strcmp(S.rocking_axis, 'dtheta')
     dtheta = 0.0001; % starting guess for dtheta
     dtheta_increment = 0.000001; % dtheta loop increment
     LHS = norm(rotyd(dtheta)*S.Q_lab-S.Q_lab); % magnitude of q'_3
@@ -26,7 +26,7 @@ if strcmp(S.rocking_angle, 'dtheta')
     else
         dangle = dtheta;
     end
-elseif strcmp(S.rocking_angle, 'dphi')
+elseif strcmp(S.rocking_axis, 'dphi')
     dphi = 0.0001; % starting guess for dphi
     dphi_increment = 0.000001; % dphi loop increment
     LHS = norm(rotxd(dphi)*S.Q_lab-S.Q_lab); % magnitude of q'_3

@@ -70,10 +70,10 @@ S.SS_shape = zeros(S.N, S.N, S.N); % creating empty shape array
 %%%%%%%%%%%%%%%%%%%%%%%%%%% SELECT SAMPLE SHAPE %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % user required to select shape by commenting/uncommenting the predefined shapes
 S.SS_shape((x_pix.^2 + z_pix.^2) < (S.length/2)^2 & abs(y_pix) < S.length/2) = complex(1,0); % cylinder
-% SS_shape(abs(x_pix) < S.length & abs(y_pix) < S.length & abs(z_pix) < S.length) = complex(1,0); % cube
-% SS_shape((abs(x_pix) + abs(y_pix) + abs(z_pix)) < S.length) = complex(1,0); % octahedral
-% SS_shape(((x_pix/2).^2 + (y_pix/1).^2 + (z_pix/3).^2) < (S.length/2)^2) = complex(1,0); % elippsoid
-% SS_shape((x_pix.^2 + z_pix.^2) < (S.length/2)^2 & abs(y_pix) < S.length/2 & x_pix < 0) = complex(1,0); % semi-cylinder
+% S.SS_shape(abs(x_pix) < S.length & abs(y_pix) < S.length & abs(z_pix) < S.length) = complex(1,0); % cube
+% S.SS_shape((abs(x_pix) + abs(y_pix) + abs(z_pix)) < S.length) = complex(1,0); % octahedral
+% S.SS_shape(((x_pix/2).^2 + (y_pix/1).^2 + (z_pix/3).^2) < (S.length/2)^2) = complex(1,0); % elippsoid
+% S.SS_shape((x_pix.^2 + z_pix.^2) < (S.length/2)^2 & abs(y_pix) < S.length/2 & x_pix < 0) = complex(1,0); % semi-cylinder
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -88,7 +88,8 @@ S.U_0 = eye(3); % 3x3 orientation matrix, otherwise set to eye(3)
 S.d = 55e-6; % detector pixel size in m
 S.lambda = (12.398/10.0)/10*10^-9; % wavelength in m
 S.D = S.p_sam*S.N*S.d/S.lambda; % detector distance in m, put absolute value if known
-S.rocking_angle = 'dtheta'; % choose 'dtheta' or 'dphi' rocking 
+S.rocking_axis = 'dtheta'; % choose 'dtheta' or 'dphi' rocking
+S.rocking_increment = 0; % set to 0 for automatic calculation based setting magnitude of q'_3 to equal the magnitude of q'_1 or 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -183,12 +184,20 @@ fprintf('\n\n<<<PERFORMING BEAMLINE-SPECIFIC CALCULATIONS>>>\n\n');
 [S.theta_bl, S.chi_bl, S.phi_bl, S.delta_bl, S.gamma_bl, S.Q_lab, S.S_lab, S.S_0lab] = motor_angles_APS_34IDC(S, 0); % returns as beamline angles. gamma_bl as -gamma and chi_bl as 90-chi
 
 % calculating rocking increment (such that |q'_1|=|q'_2|=|q'_3|) and creating fundamental matrices
-if strcmp(S.rocking_angle, 'dtheta')
-    S.dtheta = rocking_increment_APS_34IDC(S);
-    [S.R_dqp_12, S.R_dqp_3, S.R_xyz, S.S_0lab_dir] = plugin_APS_34IDC(S.theta_bl, S.chi_bl, S.phi_bl, S.delta_bl, S.gamma_bl, S.dtheta, S.rocking_angle);
-elseif strcmp(S.rocking_angle, 'dphi')
-    S.dphi = rocking_increment_APS_34IDC(S);
-    [S.R_dqp_12, S.R_dqp_3, S.R_xyz, S.S_0lab_dir] = plugin_APS_34IDC(S.theta_bl, S.chi_bl, S.phi_bl, S.delta_bl, S.gamma_bl, S.dphi, S.rocking_angle);
+if strcmp(S.rocking_axis, 'dtheta')
+    if S.rocking_increment == 0
+        S.dtheta = rocking_increment_APS_34IDC(S);
+    else
+        S.dtheta = S.rocking_increment;
+    end
+    [S.R_dqp_12, S.R_dqp_3, S.R_xyz, S.S_0lab_dir] = plugin_APS_34IDC(S.theta_bl, S.chi_bl, S.phi_bl, S.delta_bl, S.gamma_bl, S.dtheta, S.rocking_axis);
+elseif strcmp(S.rocking_axis, 'dphi')
+    if S.rocking_increment == 0
+        S.dphi = rocking_increment_APS_34IDC(S);
+    else
+        S.dphi = S.rocking_increment;
+    end
+    [S.R_dqp_12, S.R_dqp_3, S.R_xyz, S.S_0lab_dir] = plugin_APS_34IDC(S.theta_bl, S.chi_bl, S.phi_bl, S.delta_bl, S.gamma_bl, S.dphi, S.rocking_axis);
 end
 
 

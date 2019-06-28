@@ -24,18 +24,18 @@ set(plot_DRS_shape_RLS, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha',1);
 % scaling
 FT_scale = 1/S.N;
 
-% diffraction beams
-if Options.beams == 1
-    fprintf('\n...plotting diffraction beams...');
-    beam_S_0lab = quiver3(0,0,-0.9*norm(S.S_0lab)*FT_scale,0.9*(S.S_0lab(1,1)*FT_scale),0.9*(S.S_0lab(2,1)*FT_scale),0.9*(S.S_0lab(3,1)*FT_scale));
-    set(beam_S_0lab,'Color','blue','Linewidth',2,'MaxHeadSize',0.5, 'AutoScale','off');
-    text(0,0,-norm(S.S_0lab)*FT_scale,'S_{0lab}','Color','blue','FontSize',14);
-    beam_S_lab = quiver3(0,0,0,0.9*(S.S_lab(1,1)*FT_scale),0.9*(S.S_lab(2,1)*FT_scale),0.9*(S.S_lab(3,1)*FT_scale)); % last three indices are the s vector direction
-    set(beam_S_lab,'Color','red','Linewidth',2,'MaxHeadSize',0.5,'AutoScale','off');
-    text((S.S_lab(1,1)*FT_scale),(S.S_lab(2,1)*FT_scale),(S.S_lab(3,1)*FT_scale),'S_{lab}','Color','red','FontSize',14);
-    beam_Q_lab = quiver3(0,0,0,0.9*(S.Q_lab(1,1)*FT_scale),0.9*(S.Q_lab(2,1)*FT_scale),0.9*(S.Q_lab(3,1)*FT_scale)); % last three indices are the s vector direction
-    set(beam_Q_lab,'Color','green','Linewidth',2,'MaxHeadSize',0.5, 'AutoScale','off');
-    text((S.Q_lab(1,1)*FT_scale),(S.Q_lab(2,1)*FT_scale),(S.Q_lab(3,1)*FT_scale),'Q_{lab}','Color','green','FontSize',14);
+% q_1, q_2 and q_3 axes
+if Options.axes == 1
+    fprintf('\n...plotting axes...');
+    q_1_axis = quiver3(0,0,0,(0.9*norm(S.S_0lab)*FT_scale),0,0); % last three indices are the s vector direction
+    set(q_1_axis,'Color','black','Linewidth', 2, 'AutoScale','off');
+    text((1*norm(S.S_0lab)*FT_scale),0,0,'q''_1','Color','black','FontSize',14);
+    q_2_axis = quiver3(0,0,0,0,(0.9*norm(S.S_0lab)*FT_scale),0); % last three indices are the s vector direction
+    set(q_2_axis,'Color','black','Linewidth', 2, 'AutoScale','off');
+    text(0,(1*norm(S.S_0lab)*FT_scale),0,'q''_2','Color','black','FontSize',14);
+    q_3_axis = quiver3(0,0,0,0,0,(0.9*norm(S.S_0lab)*FT_scale)); % last three indices are the s vector direction
+    set(q_3_axis,'Color','black','Linewidth', 2, 'AutoScale','off');
+    text(0,0,(1*norm(S.S_0lab)*FT_scale),'q''_3','Color','black','FontSize',14);
 end
 
 % plot parameters

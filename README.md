@@ -21,3 +21,5 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
+<a href="https://zenodo.org/badge/latestdoi/185766611"><img src="https://zenodo.org/badge/185766611.svg" alt="DOI"></a>

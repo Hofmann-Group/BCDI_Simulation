@@ -45,7 +45,7 @@ close all;
 fprintf('<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>\n');
 fprintf('                         BCDI Simulation\n');
 fprintf('                            Version 1.0\n');
-fprintf('                             May 2019\n');
+fprintf('                             July 2019\n');
 fprintf('                      Written By: David Yang\n');
 fprintf(' University of Oxford, Dept. of Engineering Science, Hofmann Group\n');
 fprintf('<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>---<>\n');
